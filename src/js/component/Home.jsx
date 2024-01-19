@@ -59,10 +59,11 @@ const Home = () => {
 		}
 	};
 
-	const deleteItem = (indexItem) => {
-		setList((prevState) =>
-			prevState.filter((elemento, index) => index !== indexItem)
+	const deleteItem = (idIndex) => {
+		setTask((prevState) =>
+			prevState.filter((elemento, id) => id !== idIndex)
 		);
+		updateTask();
 	};
 
 
