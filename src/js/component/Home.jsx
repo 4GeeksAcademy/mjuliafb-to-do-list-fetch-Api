@@ -3,8 +3,22 @@ import React, { useState, useEffect } from "react";
 
 const Home = () => {
 	const [input, setInput] = useState("");
-	const [list, setList] = useState([]);
-	const [task, setTask] = useState(null);
+	const [task, setTask] = useState([]);
+
+	const createUser = async () => {
+		const response = await fetch("https://playground.4geeks.com/apis/fake/todos/user/mjulia",
+			{
+				method: "POST",
+				body: JSON.stringify([]),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+			.then(response => console.log(response.ok));
+
+		return response;
+	};
 
 	const loadTasks = () => {
 		fetch("https://playground.4geeks.com/apis/fake/todos/user/mjulia")
@@ -14,6 +28,7 @@ const Home = () => {
 			.then((resp) => {
 				setTask(resp);
 			})
+			.catch((error) => console.error("Error al cargar las tareas:", error));
 	};
 
 	const updateTask = () => {
@@ -23,17 +38,13 @@ const Home = () => {
 			headers: {
 				"Content-Type": "application/json"
 			}
-		})
-			.then(resp => {
-				console.log(resp.ok); // Será true si la respuesta es exitosa
-				console.log(resp.status); // El código de estado 200, 300, 400, etc.
-				console.log(resp.text()); // Intentará devolver el resultado exacto como string
-			})
-	}
-
+		});
+	};
 
 	useEffect(() => {
-		loadTasks();
+		createUser().then(() => {
+			loadTasks();
+		});
 	}, []);
 
 	const validateInput = (e) => {
@@ -45,7 +56,7 @@ const Home = () => {
 			if (input.trim() !== "") {
 				const inputChange =
 				{
-					id: Math.random(Math.floor() * 999999),
+					id: Math.floor(Math.random() * 999999 + 10) + Math.random().toString(36).substring(2, 5),
 					label: input,
 					done: false,
 				}
@@ -59,11 +70,16 @@ const Home = () => {
 		}
 	};
 
-	const deleteItem = (idIndex) => {
-		setTask((prevState) =>
+	const deleteItem = async (idIndex) => {
+		await setTask((prevState) =>
 			prevState.filter((elemento, id) => id !== idIndex)
 		);
 		updateTask();
+	};
+
+	const deleteAllItems = async () => {
+		setTask([]);
+		await updateTask();
 	};
 
 
@@ -75,9 +91,9 @@ const Home = () => {
 				{task && task.map((task, index) => (
 					<li key={index}>{task.label} <i className="icon fa-solid fa-x" onClick={() => deleteItem(index)}> </i></li>
 				))}
-				<li className="itemLeft">{list.length === 0 ? "No hay tareas, añadir tareas" : `${list.length} item${list.length === 1 ? '' : 's'} left`}</li>
+				<li className="itemLeft">{task.length === 0 ? "No hay tareas, añadir tareas" : `${task.length} item${task.length === 1 ? '' : 's'} left`}</li>
 			</ul>
-			<button>Eliminar todas</button>
+			<button onClick={deleteAllItems}>Eliminar todas</button>
 		</div>
 	);
 };
