@@ -31,18 +31,39 @@ const Home = () => {
 			.catch((error) => console.error("Error al cargar las tareas:", error));
 	};
 
-	const updateTask = (updateTaskAgain) => {
-		fetch('https://playground.4geeks.com/apis/fake/todos/user/mjulia', {
-			method: "PUT",
-			body: JSON.stringify(updateTaskAgain),
-			headers: {
-				"Content-Type": "application/json"
+	const updateTask = async (updateTaskAgain) => {
+		try {
+			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/mjulia', {
+				method: "PUT",
+				body: JSON.stringify(updateTaskAgain),
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+
+			if (!response.ok) {
+				// Manejar el caso en que la respuesta no sea exitosa (por ejemplo, error 404, 500, etc.)
+				console.error(`Error al actualizar la tarea. Código de estado: ${response.status}`);
+				return;
 			}
-		});
+
+			const updatedData = await response.json();
+			console.log("Tarea actualizada con éxito:", updatedData);
+		} catch (error) {
+			// Manejar errores de red u otros errores inesperados
+			console.error("Error al actualizar la tarea:", error);
+		}
 	};
 
+
 	useEffect(() => {
-		createUser();
+		const userCreated = localStorage.getItem("userCreated");
+
+		if (!userCreated) {
+			createUser();
+			localStorage.setItem("userCreated", "true");
+		}
+
 		loadTasks();
 	}, []);
 
@@ -70,23 +91,33 @@ const Home = () => {
 	};
 
 	const deleteItem = async (idIndex) => {
-		await setTask((prevState) =>
-			prevState.filter((elemento, id) => id !== idIndex)
-		);
-		updateTask();
+		try {
+			const updatedTaskList = task.filter((elemento, id) => id !== idIndex);
+			setTask(updatedTaskList);
+			await updateTask(updatedTaskList);
+			console.log(updatedTaskList);
+		} catch (error) {
+			console.error("Error al actualizar la tarea:", error);
+		}
 	};
 
-	const deleteAllItems = () => {
-		return new Promise(async (resolve, reject) => {
-			try {
-				setTask([]);
-				await updateTask();
-				resolve();
-			} catch (error) {
-				console.error("Error al eliminar todas las tareas:", error);
-				reject(error);
-			}
-		});
+	const deleteAllItems = async () => {
+		try {
+
+			const updatedTaskList = [];
+			setTask(updatedTaskList);
+			await updateTask(updatedTaskList);
+
+			const newTask = {
+				id: Math.floor(Math.random() * 999999 + 10) + Math.random().toString(36).substring(2, 5),
+				label: "Nueva tarea de ejemplo",
+				done: false,
+			};
+
+			await updateTask([newTask]);
+		} catch (error) {
+			console.error("Error al eliminar todas las tareas:", error);
+		}
 	};
 
 
