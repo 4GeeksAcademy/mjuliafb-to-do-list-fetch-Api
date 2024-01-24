@@ -5,6 +5,7 @@ const Home = () => {
 	const [input, setInput] = useState("");
 	const [task, setTask] = useState([]);
 
+
 	const createUser = async () => {
 		const response = await fetch("https://playground.4geeks.com/apis/fake/todos/user/mjulia",
 			{
@@ -30,31 +31,6 @@ const Home = () => {
 			})
 			.catch((error) => console.error("Error al cargar las tareas:", error));
 	};
-
-	const updateTask = async (updateTaskAgain) => {
-		try {
-			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/mjulia', {
-				method: "PUT",
-				body: JSON.stringify(updateTaskAgain),
-				headers: {
-					"Content-Type": "application/json"
-				}
-			});
-
-			if (!response.ok) {
-				// Manejar el caso en que la respuesta no sea exitosa (por ejemplo, error 404, 500, etc.)
-				console.error(`Error al actualizar la tarea. Código de estado: ${response.status}`);
-				return;
-			}
-
-			const updatedData = await response.json();
-			console.log("Tarea actualizada con éxito:", updatedData);
-		} catch (error) {
-			// Manejar errores de red u otros errores inesperados
-			console.error("Error al actualizar la tarea:", error);
-		}
-	};
-
 
 	useEffect(() => {
 		const userCreated = localStorage.getItem("userCreated");
@@ -87,6 +63,30 @@ const Home = () => {
 			} else {
 				alert("Por favor, rellena el input antes de añadirlo");
 			}
+		}
+	};
+
+	const updateTask = async (updateTaskAgain) => {
+		try {
+			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/mjulia', {
+				method: "PUT",
+				body: JSON.stringify(updateTaskAgain),
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+
+			if (!response.ok) {
+				// Manejar el caso en que la respuesta no sea exitosa (por ejemplo, error 404, 500, etc.)
+				console.error(`Error al actualizar la tarea. Código de estado: ${response.status}`);
+				return;
+			}
+
+			const updatedData = await response.json();
+			console.log("Tarea actualizada con éxito:", updatedData);
+		} catch (error) {
+			// Manejar errores de red u otros errores inesperados
+			console.error("Error al actualizar la tarea:", error);
 		}
 	};
 
