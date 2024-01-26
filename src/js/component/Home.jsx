@@ -33,13 +33,13 @@ const Home = () => {
 	};
 
 	useEffect(() => {
+
 		const userCreated = localStorage.getItem("userCreated");
 
 		if (!userCreated) {
 			createUser();
 			localStorage.setItem("userCreated", "true");
 		}
-
 		loadTasks();
 	}, []);
 
@@ -95,7 +95,6 @@ const Home = () => {
 			const updatedTaskList = task.filter((elemento, id) => id !== idIndex);
 			setTask(updatedTaskList);
 			await updateTask(updatedTaskList);
-			console.log(updatedTaskList);
 		} catch (error) {
 			console.error("Error al actualizar la tarea:", error);
 		}
